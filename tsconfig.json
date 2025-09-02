@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"useDefineForClassFields": true,
+		"outDir": "dist",
+		"moduleDetection": "force",
+		"esModuleInterop": true,
+
+		// Module system
+		"module": "node16",
+		"moduleResolution": "node16",
+		"verbatimModuleSyntax": true,
+		"resolveJsonModule": true,
+
+		/* Linting */
+		"strict": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": true,
+		"erasableSyntaxOnly": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true
+	},
+	"include": ["src"]
+}
