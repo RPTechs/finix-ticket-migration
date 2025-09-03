@@ -1,7 +1,8 @@
 import 'dotenv/config'
 import { Client } from '@hubspot/api-client'
-import { queryTickets } from './queries.js'
+import { migrateTicketsToBillingRequests } from './migrate.js'
 
+const BILLING_REQUEST_OBECT_TYPE_ID = '2-47710664'
 const PAGE_SIZE = 100
 const TEN_SECOND_LIMIT = 75
 const API_LIMITER_OPTIONS = {
@@ -28,7 +29,11 @@ async function main() {
 		limiterOptions: API_LIMITER_OPTIONS,
 	})
 
-	const tickets = await queryTickets(client, PAGE_SIZE)
+	await migrateTicketsToBillingRequests(
+		client,
+		PAGE_SIZE,
+		BILLING_REQUEST_OBECT_TYPE_ID
+	)
 }
 
 try {
@@ -37,5 +42,5 @@ try {
 	console.log('program exited successfully')
 } catch (e: any) {
 	console.log('error in program execution:')
-	console.log(e)
+	pprint(e)
 }

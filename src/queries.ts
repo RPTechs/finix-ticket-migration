@@ -1,6 +1,7 @@
 import type { Client } from '@hubspot/api-client'
 import type { PublicObjectSearchRequest } from '@hubspot/api-client/lib/codegen/crm/deals/models/all.js'
 import { FilterOperatorEnum } from '@hubspot/api-client/lib/codegen/crm/exports/models/all.js'
+import { PROP_MAPPINGS } from './mappings.js'
 
 export async function queryTickets(client: Client, pageSize: number) {
 	const tickets: any[] = []
@@ -24,7 +25,7 @@ export async function queryTickets(client: Client, pageSize: number) {
 					],
 				},
 			],
-			properties: ['email', 'createdate'],
+			properties: PROP_MAPPINGS.map(([m, _]) => m),
 			limit: pageSize,
 			after,
 		}
