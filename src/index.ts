@@ -1,18 +1,12 @@
 import 'dotenv/config'
 import { Client } from '@hubspot/api-client'
-import { migrateTicketsToBillingRequests } from './migrate.js'
-
-const BILLING_REQUEST_OBECT_TYPE_ID = '2-47710664'
-const PAGE_SIZE = 100
-const TEN_SECOND_LIMIT = 75
-const API_LIMITER_OPTIONS = {
-	id: 'hubspot-client-limiter',
-	maxConcurrent: 1,
-	minTime: 100,
-	reservoir: TEN_SECOND_LIMIT,
-	reservoirRefreshAmount: TEN_SECOND_LIMIT,
-	reservoirRefreshInterval: 10 * 1000,
-}
+import * as consts from './consts.js'
+import { getAssociationsForMappings } from './associations.js'
+import {
+	createApiBillingRequestObjectsFromFetchedTickets,
+	batchCreateBillingRequests,
+} from './migrate.js'
+import { fetchOneTicketPage, fetchTickets } from './queries.js'
 
 function pprint(content: any): void {
 	console.dir(content, { depth: null, colors: true })
@@ -26,14 +20,36 @@ async function main() {
 
 	const client: Client = new Client({
 		accessToken: API_TOKEN,
-		limiterOptions: API_LIMITER_OPTIONS,
+		limiterOptions: consts.API_LIMITER_OPTIONS,
 	})
 
-	await migrateTicketsToBillingRequests(
+	// const tickets = await fetchOneTicketPage(client, 100)
+
+	const tickets = await fetchTickets(client, consts.PAGE_SIZE)
+	console.log(`tickets found: ${tickets.length}`)
+
+	const reqObjects = createApiBillingRequestObjectsFromFetchedTickets(tickets)
+
+	const mappings = await batchCreateBillingRequests(
 		client,
-		PAGE_SIZE,
-		BILLING_REQUEST_OBECT_TYPE_ID
+		reqObjects,
+		consts.BILLING_REQUEST_OBECT_TYPE_ID,
+		consts.SEND_CHUNK_SIZE
 	)
+	console.log(mappings)
+
+	// const mappings = [consts.TEST_MAPPING]
+	// const mappingsWithAssociations = await getAssociationsForMappings(
+	// 	mappings,
+	// 	client
+	// )
+	// console.log(mappingsWithAssociations)
+
+	// for each mapping:
+	//   for each association:
+	//		for each record id:
+	//		  - unassign from source
+	//		  - assign to dest
 }
 
 try {

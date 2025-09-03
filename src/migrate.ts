@@ -1,11 +1,8 @@
-import { Client } from '@hubspot/api-client'
 import { PROP_MAPPINGS } from './mappings.js'
-import { queryTickets } from './queries.js'
+import { Client } from '@hubspot/api-client'
+import type { T_MAPPING } from './types.js'
 
-/**
- * Transform a ticket record into a Billing Request record
- */
-function migrateTicketToBillingRequest(ticket: any) {
+function createApiBillingRequestObjectProperties(ticket: any) {
 	const mapped: Record<string, any> = {}
 
 	for (const [ticketProp, billingProp] of PROP_MAPPINGS) {
@@ -14,37 +11,49 @@ function migrateTicketToBillingRequest(ticket: any) {
 		}
 	}
 
+	// handle unnamed
 	if (mapped['request_name'] == undefined) {
 		mapped['request_name'] = 'No Name'
 	}
+	// Billing Requst Pipeline = "Billing Requests"
+	mapped['hs_pipeline'] = '768306582'
+
+	mapped['source_ticket_id'] = ticket.id
 
 	return mapped
 }
 
-/**
- * Example migration: copy tickets into billing requests
- */
-export async function migrateTicketsToBillingRequests(
-	client: Client,
-	pageSize: number,
-	internalName: string
-) {
-	// get tickets that meet criteria
-	const tickets = await queryTickets(client, pageSize)
-
-	// create request bodies
-	const batchCreateObjects = tickets.map((ticket) => {
-		const billingRequestProps = migrateTicketToBillingRequest(ticket)
-		return { properties: billingRequestProps }
+export const createApiBillingRequestObjectsFromFetchedTickets = (
+	tickets: any[]
+) =>
+	tickets.map((t) => {
+		return { properties: createApiBillingRequestObjectProperties(t) }
 	})
 
-	//  batch create
-	try {
-		const result = await client.crm.objects.batchApi.create(internalName, {
-			inputs: batchCreateObjects,
-		})
-		console.log(`Created ${result.results.length} Billing Requests`)
-	} catch (err) {
-		console.error('Failed to create Billing Requests batch', err)
+export async function batchCreateBillingRequests(
+	client: Client,
+	reqObjects: any[],
+	internalName: string,
+	sendBatchMax: number
+) {
+	const results: T_MAPPING[] = []
+
+	for (let i = 0; i < reqObjects.length; i += sendBatchMax) {
+		const chunk = reqObjects.slice(i, i + sendBatchMax)
+		const response = await client.crm.objects.batchApi.create(
+			internalName,
+			{
+				inputs: chunk,
+			}
+		)
+
+		results.push(
+			...response.results.map((r) => ({
+				source: r.properties['source_ticket_id']!,
+				dest: r.id,
+			}))
+		)
 	}
+
+	return results
 }
