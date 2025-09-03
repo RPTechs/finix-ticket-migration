@@ -2,16 +2,16 @@ import 'dotenv/config'
 import { Client } from '@hubspot/api-client'
 import { queryTickets } from './queries.js'
 
+const PAGE_SIZE = 100
+const TEN_SECOND_LIMIT = 75
 const API_LIMITER_OPTIONS = {
 	id: 'hubspot-client-limiter',
 	maxConcurrent: 1,
-	minTime: 333,
-	reservoir: 50,
-	reservoirRefreshAmount: 50,
+	minTime: 100,
+	reservoir: TEN_SECOND_LIMIT,
+	reservoirRefreshAmount: TEN_SECOND_LIMIT,
 	reservoirRefreshInterval: 10 * 1000,
 }
-
-const PAGE_SIZE = 100
 
 function pprint(content: any): void {
 	console.dir(content, { depth: null, colors: true })
