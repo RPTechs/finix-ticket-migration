@@ -3,7 +3,7 @@ import type { PublicObjectSearchRequest } from '@hubspot/api-client/lib/codegen/
 import { FilterOperatorEnum } from '@hubspot/api-client/lib/codegen/crm/exports/models/all.js'
 import { PROP_MAPPINGS } from './mappings.js'
 
-export async function queryTickets(client: Client, pageSize: number) {
+export async function fetchTickets(client: Client, pageSize: number) {
 	const tickets: any[] = []
 	let after: string | undefined = undefined
 
