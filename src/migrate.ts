@@ -1,6 +1,7 @@
 import { PROP_MAPPINGS } from './mappings.js'
 import { Client } from '@hubspot/api-client'
 import type { T_MAPPING } from './types.js'
+import { PIPELINE_STAGE_MAPPINGS } from './consts.js'
 
 function createApiBillingRequestObjectProperties(ticket: any) {
 	const mapped: Record<string, any> = {}
@@ -18,7 +19,13 @@ function createApiBillingRequestObjectProperties(ticket: any) {
 	// Billing Requst Pipeline = "Billing Requests"
 	mapped['hs_pipeline'] = '768306582'
 
+	// source ticket id
 	mapped['source_ticket_id'] = ticket.id
+
+	// hs_pipeline_stage
+	mapped['hs_pipeline_stage'] = PIPELINE_STAGE_MAPPINGS.get(
+		mapped['hs_pipeline_stage']
+	)
 
 	return mapped
 }

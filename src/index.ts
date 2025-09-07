@@ -1,12 +1,13 @@
 import 'dotenv/config'
 import { Client } from '@hubspot/api-client'
 import * as consts from './consts.js'
-import { getAssociationsForMappings } from './associations.js'
+import { associateRecords, getAssociationsByObjectId } from './associations.js'
 import {
 	createApiBillingRequestObjectsFromFetchedTickets,
 	batchCreateBillingRequests,
 } from './migrate.js'
-import { fetchOneTicketPage, fetchTickets } from './queries.js'
+import { fetchTickets } from './queries.js'
+import type { T_ALL_ASSOCIATIONS_MAP, T_ASSOCIATIONS_MAP } from './types.js'
 
 function pprint(content: any): void {
 	console.dir(content, { depth: null, colors: true })
@@ -23,11 +24,16 @@ async function main() {
 		limiterOptions: consts.API_LIMITER_OPTIONS,
 	})
 
-	// const tickets = await fetchOneTicketPage(client, 100)
+	// const schema = await client.crm.associations.schema.typesApi.getAll(
+	// 	consts.BILLING_REQUEST_OBECT_TYPE_ID,
+	// 	'ticket'
+	// )
+	// console.log(schema)
 
 	const tickets = await fetchTickets(client, consts.PAGE_SIZE)
 	console.log(`tickets found: ${tickets.length}`)
 
+	// const tickets = await fetchOneTicketPage(client, 10)
 	const reqObjects = createApiBillingRequestObjectsFromFetchedTickets(tickets)
 
 	const mappings = await batchCreateBillingRequests(
@@ -36,20 +42,31 @@ async function main() {
 		consts.BILLING_REQUEST_OBECT_TYPE_ID,
 		consts.SEND_CHUNK_SIZE
 	)
-	console.log(mappings)
+	// let mappings = [{ source: '2809652062', dest: '34190142814' }]
+	// console.log(mappings)
 
-	// const mappings = [consts.TEST_MAPPING]
-	// const mappingsWithAssociations = await getAssociationsForMappings(
-	// 	mappings,
-	// 	client
-	// )
-	// console.log(mappingsWithAssociations)
+	// get associations for source
+	const allAssociationsMap: T_ALL_ASSOCIATIONS_MAP = new Map()
+	for (const mapping of mappings) {
+		const associations = await getAssociationsByObjectId(
+			mapping.source,
+			consts.ASSOCIATION_KEYS,
+			client
+		)
 
-	// for each mapping:
-	//   for each association:
-	//		for each record id:
-	//		  - unassign from source
-	//		  - assign to dest
+		const associationsMap: T_ASSOCIATIONS_MAP = new Map()
+		for (const key of consts.ASSOCIATION_KEYS) {
+			const associationsOfType = associations?.[key]?.results || []
+			associationsMap.set(
+				key,
+				associationsOfType.map((a) => a.id)
+			)
+		}
+		allAssociationsMap.set(mapping.dest, associationsMap)
+		// console.log(allAssociationsMap)
+	}
+
+	await associateRecords(client, allAssociationsMap)
 }
 
 try {
