@@ -36,4 +36,5 @@ export const PROP_MAPPINGS = [
 	['billing_zip_code', 'billing_zip_code'],
 	['final_bill_date', 'final_bill_date'],
 	['package', 'package2'],
+	['deal_from_pipeline', 'deal_pipeline2'],
 ]
