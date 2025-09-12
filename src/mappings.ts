@@ -35,4 +35,5 @@ export const PROP_MAPPINGS = [
 	['billing_note_details', 'billing_note_details'],
 	['billing_zip_code', 'billing_zip_code'],
 	['final_bill_date', 'final_bill_date'],
+	['package', 'package2'],
 ]

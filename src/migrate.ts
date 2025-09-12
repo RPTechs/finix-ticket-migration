@@ -27,6 +27,34 @@ function createApiBillingRequestObjectProperties(ticket: any) {
 		mapped['hs_pipeline_stage']
 	)
 
+	// package
+	const pkg = mapped['package2'] ?? ''
+	let correctedPkg = pkg
+	switch (pkg) {
+		case 'p2c':
+			correctedPkg = 'P2C'
+			break
+		case 'pathward':
+			correctedPkg = 'Pathward'
+			break
+		case 'pull/push_to_card':
+			correctedPkg = 'Pull/Push To Card'
+			break
+		case 'reporting':
+			correctedPkg = 'Reporting'
+			break
+		case 'settlements':
+			correctedPkg = 'Settlements'
+			break
+		case 'settlementss':
+			correctedPkg = 'Settlementss'
+			break
+		case 'worldpay':
+			correctedPkg = 'Worldpay'
+			break
+	}
+	mapped['package2'] = correctedPkg
+
 	return mapped
 }
 
