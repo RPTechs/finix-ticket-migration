@@ -51,7 +51,13 @@ export const ASSOCIATIONS_META_MAP: T_ASSOCIATIONS_META_MAP = new Map([
 	],
 ])
 export const PIPELINE_STAGE_MAPPINGS = new Map<string, string>([
-	['173020599', '1120559246'],
-	['173020600', '1120559256'],
-	['173020601', '1120494401'],
+	['172972345', '1120559245'], // Not Submitted
+	['192344246', '1120559252'], // Ready for Finance Review
+	['203065970', '1120559253'], // Under Manager Review
+	['203041335', '1120621909'], // Under Finance Review
+	['203041336', '1120559254'], // Approved
+	['172972347', '1120559255'], // In Progress
+	['173020599', '1120559246'], // Completed
+	['173020600', '1120559256'], // Rejected
+	['173020601', '1120494401'], // Cancelled
 ])
