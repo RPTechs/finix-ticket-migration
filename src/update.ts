@@ -1,8 +1,27 @@
 import { Client } from '@hubspot/api-client'
+import { AssociationSpecAssociationCategoryEnum } from '@hubspot/api-client/lib/codegen/crm/deals/models/all.js'
 
-export async function updateBillingRequest(
+export async function updateBillingRequests(
 	client: Client,
-	request: string[][]
+	requests: string[][]
 ): Promise<void> {
-	console.log('updateBillingRequest')
+	for (const request of requests) {
+		try {
+			await client.crm.associations.v4.basicApi.create(
+				'2-49298689',
+				request[0]!,
+				'ticket',
+				request[1]!,
+				[
+					{
+						associationCategory:
+							AssociationSpecAssociationCategoryEnum.UserDefined,
+						associationTypeId: 61,
+					},
+				]
+			)
+		} catch (e: any) {
+			console.log(`association error: ${e}`)
+		}
+	}
 }

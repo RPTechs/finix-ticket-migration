@@ -7,7 +7,7 @@ export const BILLING_REQUEST_INTERNAL_NAME = 'billing_requests'
 export const PAGE_SIZE = 100
 export const SEND_CHUNK_SIZE = 100
 const TEN_SECOND_LIMIT = 90
-const SINGLE_REQUEST_MIN_TIME_MILLISECONDS = 200
+const SINGLE_REQUEST_MIN_TIME_MILLISECONDS = 300
 export const API_LIMITER_OPTIONS = {
 	id: 'hubspot-client-limiter',
 	maxConcurrent: 1,

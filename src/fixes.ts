@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { Client } from '@hubspot/api-client'
 import pprint from './pprint.js'
 import { getMigratedBillingRequests } from './queries.js'
-import { updateBillingRequest } from './update.js'
+import { updateBillingRequests } from './update.js'
 import * as consts from './consts.js'
 
 interface I_MAIN {
@@ -11,7 +11,7 @@ interface I_MAIN {
 		pageSize: number
 	): Promise<string[][]>
 
-	updateBillingRequest(client: Client, request: string[][]): Promise<void>
+	updateBillingRequests(client: Client, requests: string[][]): Promise<void>
 }
 
 async function main(impl: I_MAIN) {
@@ -30,13 +30,11 @@ async function main(impl: I_MAIN) {
 		consts.PAGE_SIZE
 	)
 
-	// for (const req of requests) {
-	// 	await impl.updateBillingRequest(client, req)
-	// }
+	await impl.updateBillingRequests(client, requests)
 }
 
 try {
-	await main({ getMigratedBillingRequests, updateBillingRequest })
+	await main({ getMigratedBillingRequests, updateBillingRequests })
 
 	console.log('program exited successfully')
 } catch (e: any) {
