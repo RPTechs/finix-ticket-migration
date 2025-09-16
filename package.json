@@ -5,7 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"preview": "vite preview",
-		"dev": "npx tsc && node dist/index.js"
+		"dev": "npx tsc && node dist/index.js",
+		"fix": "npx tsc && node dist/fixes.js"
 	},
 	"devDependencies": {
 		"@types/node": "^24.3.0",

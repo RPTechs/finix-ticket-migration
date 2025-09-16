@@ -1,20 +1,47 @@
+import 'dotenv/config'
+import { Client } from '@hubspot/api-client'
 import pprint from './pprint.js'
+import { getMigratedBillingRequests } from './queries.js'
+import { updateBillingRequest } from './update.js'
+import * as consts from './consts.js'
+import type { SimplePublicObject } from '@hubspot/api-client/lib/codegen/crm/companies/index.js'
 
 interface I_MAIN {
-	getMigratedBillingRequests(): Promise<any[]>
-	updateBillingRequest(request: any): Promise<void>
+	getMigratedBillingRequests(
+		client: Client,
+		pageSize: number
+	): Promise<SimplePublicObject[]>
+
+	updateBillingRequest(
+		client: Client,
+		request: SimplePublicObject
+	): Promise<void>
 }
 
-async function main(main: I_MAIN) {
-	const requests = await main.getMigratedBillingRequests()
-
-	for (const req of requests) {
-		await main.updateBillingRequest(req)
+async function main(impl: I_MAIN) {
+	const API_TOKEN = process.env.API_TOKEN!
+	if (API_TOKEN == '') {
+		throw new Error('missing API_TOKEN')
 	}
+
+	const client: Client = new Client({
+		accessToken: API_TOKEN,
+		limiterOptions: consts.API_LIMITER_OPTIONS,
+	})
+
+	const requests = await impl.getMigratedBillingRequests(
+		client,
+		consts.PAGE_SIZE
+	)
+	pprint(requests.length)
+
+	// for (const req of requests) {
+	// 	await impl.updateBillingRequest(client, req)
+	// }
 }
 
 try {
-	await main()
+	await main({ getMigratedBillingRequests, updateBillingRequest })
 
 	console.log('program exited successfully')
 } catch (e: any) {

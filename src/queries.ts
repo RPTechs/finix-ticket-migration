@@ -77,3 +77,39 @@ export async function fetchTickets(client: Client, pageSize: number) {
 
 	return tickets
 }
+
+export async function getMigratedBillingRequests(
+	client: Client,
+	pageSize: number
+) {
+	const records = []
+	let after: string | undefined = undefined
+
+	do {
+		const objectSearchRequest: PublicObjectSearchRequest = {
+			filterGroups: [
+				{
+					filters: [
+						{
+							propertyName: 'source_ticket_id',
+							operator: FilterOperatorEnum.HasProperty,
+						},
+					],
+				},
+			],
+			limit: pageSize,
+			after,
+		}
+
+		const res = await client.crm.objects.searchApi.doSearch(
+			'2-49298689',
+			objectSearchRequest
+		)
+
+		records.push(...res.results)
+
+		after = res.paging?.next?.after
+	} while (after)
+
+	return records
+}
