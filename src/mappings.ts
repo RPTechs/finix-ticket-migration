@@ -38,3 +38,10 @@ export const PROP_MAPPINGS = [
 	['package', 'package2'],
 	['deal_from_pipeline', 'deal_pipeline2'],
 ]
+
+export const FIX_MAPPINGS = [
+	['createdate', 'original_create_date'],
+	['closed_date', 'original_close_date'],
+	['hubspot_owner_id', 'original_owner'],
+	['original_ticket_owner', 'billing_request_submitter'],
+]

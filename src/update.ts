@@ -1,27 +1,37 @@
 import { Client } from '@hubspot/api-client'
-import { AssociationSpecAssociationCategoryEnum } from '@hubspot/api-client/lib/codegen/crm/deals/models/all.js'
+import { FIX_MAPPINGS } from './mappings.js'
+import { BILLING_REQUEST_OBECT_TYPE_ID } from './consts.js'
 
 export async function updateBillingRequests(
 	client: Client,
 	requests: string[][]
 ): Promise<void> {
-	for (const request of requests) {
+	for (const req of requests) {
 		try {
-			await client.crm.associations.v4.basicApi.create(
-				'2-49298689',
-				request[0]!,
-				'ticket',
-				request[1]!,
-				[
-					{
-						associationCategory:
-							AssociationSpecAssociationCategoryEnum.UserDefined,
-						associationTypeId: 61,
-					},
-				]
+			const ticketProperties = FIX_MAPPINGS.map((mapping) => mapping[0])
+
+			const ticket = await client.crm.tickets.basicApi.getById(
+				req[1]!,
+				ticketProperties
+			)
+
+			const updateData: Record<string, string> = {}
+
+			FIX_MAPPINGS.forEach(([ticketProp, billingRequestProp]) => {
+				if (ticket.properties[ticketProp] !== undefined) {
+					updateData[billingRequestProp] = ticket.properties[
+						ticketProp
+					] as string
+				}
+			})
+
+			await client.crm.objects.basicApi.update(
+				BILLING_REQUEST_OBECT_TYPE_ID,
+				req[0]!,
+				{ properties: updateData }
 			)
 		} catch (e: any) {
-			console.log(`association error: ${e}`)
+			console.log(`error updating mapping ${req}`)
 		}
 	}
 }
