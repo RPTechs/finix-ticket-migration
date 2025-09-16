@@ -97,6 +97,7 @@ export async function getMigratedBillingRequests(
 					],
 				},
 			],
+			properties: ['source_ticket_id'],
 			limit: pageSize,
 			after,
 		}
@@ -106,7 +107,9 @@ export async function getMigratedBillingRequests(
 			objectSearchRequest
 		)
 
-		records.push(...res.results)
+		records.push(
+			...res.results.map((r) => [r.id, r.properties['source_ticket_id']!])
+		)
 
 		after = res.paging?.next?.after
 	} while (after)

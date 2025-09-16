@@ -4,18 +4,14 @@ import pprint from './pprint.js'
 import { getMigratedBillingRequests } from './queries.js'
 import { updateBillingRequest } from './update.js'
 import * as consts from './consts.js'
-import type { SimplePublicObject } from '@hubspot/api-client/lib/codegen/crm/companies/index.js'
 
 interface I_MAIN {
 	getMigratedBillingRequests(
 		client: Client,
 		pageSize: number
-	): Promise<SimplePublicObject[]>
+	): Promise<string[][]>
 
-	updateBillingRequest(
-		client: Client,
-		request: SimplePublicObject
-	): Promise<void>
+	updateBillingRequest(client: Client, request: string[][]): Promise<void>
 }
 
 async function main(impl: I_MAIN) {
@@ -33,7 +29,6 @@ async function main(impl: I_MAIN) {
 		client,
 		consts.PAGE_SIZE
 	)
-	pprint(requests.length)
 
 	// for (const req of requests) {
 	// 	await impl.updateBillingRequest(client, req)
