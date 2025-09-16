@@ -8,10 +8,7 @@ import {
 } from './migrate.js'
 import { fetchTickets } from './queries.js'
 import type { T_ALL_ASSOCIATIONS_MAP, T_ASSOCIATIONS_MAP } from './types.js'
-
-function pprint(content: any): void {
-	console.dir(content, { depth: null, colors: true })
-}
+import pprint from './pprint.js'
 
 async function main() {
 	const API_TOKEN = process.env.API_TOKEN!

@@ -15,7 +15,7 @@ export const PROP_MAPPINGS = [
 	['refund_credit_channel', 'refund_credit_channel'],
 	['subject', 'request_name'],
 	['close_date', 'close_date'],
-	['ticket_type', 'billing_request_type'],
+	['billing_type', 'billing_request_type'],
 	['finance_review_status', 'billing_review_status'],
 	['buyer_id', 'buyer_id'],
 	['canceled_reason', 'canceled_reason'],
